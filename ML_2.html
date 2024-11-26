@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Networks for CIFAR-10 Image Classification</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #007BFF; }
+        img { max-width: 100%; height: auto; }
+        .code-block { background: #f4f4f4; padding: 10px; border-left: 5px solid #007BFF; font-family: monospace; }
+        .note { font-style: italic; color: gray; }
+        .github-link { text-decoration: none; color: #ffffff; background-color: #007BFF; padding: 10px 15px; border-radius: 5px; }
+        .github-link:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Neural Networks for CIFAR-10 Image Classification</h1>
+            <p>An exploration of how neural networks can classify images from the CIFAR-10 dataset into distinct categories using advanced AI techniques.</p>
+        </header>
+
+        <section id="introduction">
+            <h2>Introduction</h2>
+            <p>Neural networks are at the forefront of AI-driven image recognition systems. They mimic the human brain's ability to recognize patterns, making them ideal for tasks like classifying objects in images.</p>
+            <p>The CIFAR-10 dataset, containing 60,000 RGB images across 10 classes, provides an excellent benchmark for training and testing neural networks. This report explores how a convolutional neural network (CNN) processes these images to classify them into categories like airplanes, automobiles, and animals.</p>
+            <img src="Screenshot 2024-11-26 201357.png" alt="CIFAR-10 Dataset Example" title="Sample Images from CIFAR-10">
+            <p class="note">Figure: Sample images from the CIFAR-10 dataset, representing diverse classes.</p>
+        </section>
+
+        <section id="dataset">
+            <h2>The CIFAR-10 Dataset</h2>
+            <p>The CIFAR-10 dataset is widely used in AI for image classification. It consists of:</p>
+            <ul>
+                <li><strong>Number of Samples:</strong> 60,000 images (50,000 for training and 10,000 for testing).</li>
+                <li><strong>Image Size:</strong> 32x32 pixels, with 3 color channels (RGB).</li>
+                <li><strong>Classes:</strong> Airplane, Automobile, Bird, Cat, Deer, Dog, Frog, Horse, Ship, and Truck.</li>
+            </ul>
+        </section>
+
+        <section id="key-parameters">
+            <h2>Key Parameters of Neural Networks</h2>
+            <p>Neural networks rely on several key parameters for optimal performance:</p>
+            <ul>
+                <li><strong>Convolutional Layers:</strong> Extract spatial features from the images.</li>
+                <li><strong>Pooling Layers:</strong> Reduce the spatial dimensions while retaining important features.</li>
+                <li><strong>Activation Functions:</strong> Non-linear functions like ReLU help the network learn complex patterns.</li>
+                <li><strong>Optimizer:</strong> Algorithms like Adam minimize the loss function efficiently.</li>
+            </ul>
+        </section>
+
+        <section id="implementation">
+            <h2>Code Implementation</h2>
+            <p>The following code demonstrates how to build and train a convolutional neural network (CNN) on the CIFAR-10 dataset:</p>
+            <div class="code-block">
+<pre>
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.utils import to_categorical
+
+# Load CIFAR-10 dataset
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+X_train, X_test = X_train / 255.0, X_test / 255.0  # Normalize pixel values
+y_train, y_test = to_categorical(y_train), to_categorical(y_test)
+
+# Define the CNN model
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)),
+    MaxPooling2D((2, 2)),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')
+])
+
+# Compile and train the model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(X_train, y_train, epochs=10, batch_size=64, validation_split=0.2)
+
+# Evaluate the model
+test_loss, test_acc = model.evaluate(X_test, y_test)
+print(f"Test Accuracy: {test_acc:.2f}")
+</pre>
+            </div>
+            <p>The model achieves competitive accuracy across the 10 classes of the CIFAR-10 dataset.</p>
+        </section>
+
+        <section id="analysis-results">
+            <h2>Analysis and Results</h2>
+            <p>The performance of the CNN model on the CIFAR-10 dataset was evaluated. Below are the training and validation accuracy and loss trends over 10 epochs:</p>
+            <img src="Screenshot 2024-11-26 203143.png" alt="Training and Validation Performance" title="Training and Validation Performance">
+            <p class="note">Figure: The graph shows the trends in training and validation accuracy and loss during the model training process.</p>
+        </section>
+
+        <section id="accuracy-challenges">
+            <h2>Accuracy and Challenges</h2>
+            <h3>Accuracy</h3>
+            <p>The CNN model achieved a test accuracy of approximately <strong>85%</strong>, which highlights its ability to effectively classify images into the 10 distinct classes in the CIFAR-10 dataset. The use of convolutional layers enabled the model to extract key spatial features, while pooling layers helped in dimensionality reduction without losing critical information.</p>
+
+            <h3>Challenges</h3>
+            <ul>
+                <li><strong>Overfitting:</strong> During training, the validation accuracy was consistently lower than the training accuracy, indicating slight overfitting. Regularization techniques such as dropout or data augmentation could be used to mitigate this issue.</li>
+                <li><strong>Misclassifications:</strong> The model occasionally struggled with visually similar classes, such as cats and dogs or automobiles and trucks, which share overlapping pixel patterns. Improving the dataset or adding more training epochs could help address this challenge.</li>
+                <li><strong>Dataset Complexity:</strong> CIFAR-10 images are small (32x32 pixels), making it challenging to capture finer details, especially for visually complex objects like animals.</li>
+            </ul>
+        </section>
+
+        <section id="github">
+            <h2>GitHub Repository</h2>
+            <p>Explore the complete code and implementation on GitHub:</p>
+            <a href="https://github.com/nikhilkoruturu/Machine-Learning" target="_blank" class="github-link">View on GitHub</a>
+        </section>
+
+        <section id="conclusion">
+            <h2>Conclusion</h2>
+            <p>Neural networks, especially convolutional architectures, are powerful tools for image classification tasks. The CIFAR-10 dataset demonstrates how these models can effectively learn patterns and classify images into distinct categories.</p>
+            <p>Future work could focus on applying advanced techniques such as dropout, data augmentation, or transfer learning to further improve accuracy and address challenges like overfitting and misclassification.</p>
+        </section>
+    </div>
+</body>
+</html>
